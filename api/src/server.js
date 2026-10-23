@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+require('./database/db');
 
 const vagasRoutes = require('./routes/vagas.routes');
 
@@ -17,11 +18,8 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.use('/api/vagas', vagasRoutes);
+
 app.listen(PORT, () => {
   console.log(`DevJobs API rodando em http://localhost:${PORT}`);
 });
-
-app.use('/api/vagas', vagasRoutes);
-
-const vagasRoutes = require('./routes/vagas.routes');
-app.use('/api/vagas', vagasRoutes);

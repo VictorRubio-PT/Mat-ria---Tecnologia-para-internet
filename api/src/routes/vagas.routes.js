@@ -1,15 +1,21 @@
-const { router } = require('express');
-const router = router();
+const { Router } = require('express');
+const router = Router();
 
-const vagasMock = [
-    {id: 1, title: 'Desenvolvedor Front-end React', empresa: 'Tech Solutions', tipo: 'Remoto'},
-    {id: 2, title: 'Desenvolvedor Back-end Node.js', empresa: 'CodeWorks', tipo: 'Híbrido'},
-    {id: 3, title: 'Desenvolvedor Full Stack', empresa: 'Inova Digital', tipo: 'Presencial'},
-    {id: 4, title: 'Desenvolvedor Mobile Flutter', empresa: 'AppMakers', tipo: 'Remoto'}
-]
+const db = require('../database/db');
 
-router.get('/vagas', (req, res) => {
-    res.json(vagasMock);
+router.get('/', (req, res) => {
+    try {
+        const vagas = db.prepare(`
+            SELECT v.*, e.nome AS empresa_nome
+            FROM vagas v
+            JOIN empresas e ON v.empresa_id = e.id
+            ORDER BY v.created_at DESC
+        `).all();
+        res.json(vagas);
+    } catch (error) {
+        console.error('Erro ao buscar vagas:', error);
+        res.status(500).json({ error: 'Erro interno ao buscar vagas' });
+    }
 });
 
 module.exports = router;
